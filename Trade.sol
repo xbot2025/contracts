@@ -1,6 +1,6 @@
+// SPDX-License-Identifier: MIT
 // File: contracts/libs/IBEP20.sol
 
-// SPDX-License-Identifier: MIT
 pragma solidity ^0.8.18;
 
 abstract contract IBEP20 {
@@ -112,7 +112,6 @@ abstract contract IBEP20 {
 
 // File: contracts/libs/Context.sol
 
-// SPDX-License-Identifier: MIT
 pragma solidity ^0.8.18;
 
 /*
@@ -138,7 +137,6 @@ abstract contract Context {
 
 // File: contracts/libs/Ownable.sol
 
-// SPDX-License-Identifier: MIT
 pragma solidity ^0.8.18;
 
 /**
@@ -215,15 +213,11 @@ abstract contract Ownable is Context {
     _owner = newOwner;
     emit OwnershipTransferred(oldOwner, newOwner);
   }
-
-
 }
 
 // File: contracts/libs/SafeMath.sol
 
-// SPDX-License-Identifier: MIT
 pragma solidity ^0.8.18;
-
 
 /**
  * @dev Wrappers over Solidity's arithmetic operations with added overflow
@@ -277,7 +271,11 @@ library SafeMath {
    * Requirements:
    * - Subtraction cannot overflow.
    */
-  function sub(uint256 a, uint256 b, string memory errorMessage) internal pure returns (uint256) {
+  function sub(
+    uint256 a,
+    uint256 b,
+    string memory errorMessage
+  ) internal pure returns (uint256) {
     require(b <= a, errorMessage);
     uint256 c = a - b;
 
@@ -333,7 +331,11 @@ library SafeMath {
    * Requirements:
    * - The divisor cannot be zero.
    */
-  function div(uint256 a, uint256 b, string memory errorMessage) internal pure returns (uint256) {
+  function div(
+    uint256 a,
+    uint256 b,
+    string memory errorMessage
+  ) internal pure returns (uint256) {
     // Solidity only automatically asserts when dividing by 0
     require(b > 0, errorMessage);
     uint256 c = a / b;
@@ -368,7 +370,11 @@ library SafeMath {
    * Requirements:
    * - The divisor cannot be zero.
    */
-  function mod(uint256 a, uint256 b, string memory errorMessage) internal pure returns (uint256) {
+  function mod(
+    uint256 a,
+    uint256 b,
+    string memory errorMessage
+  ) internal pure returns (uint256) {
     require(b != 0, errorMessage);
     return a % b;
   }
@@ -376,7 +382,6 @@ library SafeMath {
 
 // File: contracts/libs/IUniswapV2Router.sol
 
-// SPDX-License-Identifier: MIT
 pragma solidity ^0.8.18;
 
 interface IUniswapV2Router {
@@ -418,7 +423,6 @@ interface IUniswapV2Router {
 
 // File: contracts/libs/IUniswapV2Factory.sol
 
-// SPDX-License-Identifier: MIT
 pragma solidity ^0.8.18;
 
 interface IUniswapV2Factory {
@@ -429,29 +433,28 @@ interface IUniswapV2Factory {
     uint256
   );
 
-  function getPair(address _tokenA, address _tokenB)
-    external
-    view
-    returns (address pair);
+  function getPair(
+    address _tokenA,
+    address _tokenB
+  ) external view returns (address pair);
 
   function allPairs(uint256) external view returns (address pair);
 
   function allPairsLength() external view returns (uint256);
 
-  function createPair(address _tokenA, address _tokenB)
-    external
-    returns (address pair);
+  function createPair(
+    address _tokenA,
+    address _tokenB
+  ) external returns (address pair);
 
   function setFeeToSetter(address) external;
 }
 
 // File: contracts/libs/IUniswapV2Pair.sol
 
-// SPDX-License-Identifier: MIT
 pragma solidity ^0.8.18;
 
 interface IUniswapV2Pair {
-
   function factory() external view returns (address);
 
   function token0() external view returns (address);
@@ -465,23 +468,12 @@ interface IUniswapV2Pair {
   function getReserves()
     external
     view
-    returns (
-      uint112 reserve0,
-      uint112 reserve1,
-      uint32 blockTimestampLast
-    );
-
+    returns (uint112 reserve0, uint112 reserve1, uint32 blockTimestampLast);
 }
 
 // File: contracts/Trade.sol
 
-// SPDX-License-Identifier: MIT
 pragma solidity ^0.8.18;
-
-
-
-
-
 
 contract TradeSmartVault {
   using SafeMath for uint256;
@@ -587,17 +579,17 @@ contract Trade is Ownable {
   // Maximum purchase amount
   uint256 public constant MAX_PURCHASE = 1000 * 10 ** 18;
   // Time period after which mining power is halved
-  uint256 public constant DECREASE_TIME = 1 hours; // 100 days;
+  uint256 public constant DECREASE_TIME = 100 days;
   // Time period between mining cycles
-  uint256 public constant MINT_CYCLE = 20 minutes; // 24 hours;
+  uint256 public constant MINT_CYCLE = 24 hours;
   // Minimum burn Amount
   uint256 public constant MIN_BURN = 100 * 10 ** 18;
   // Initial liquidity addition time and registration purchase restriction time
   uint256 public START_TIME;
-  // Address for market allocation (20%)
+  // Address for market allocation (12%)
   address internal _market = 0x6b91a867E777FD59f9cb3610d8D99d58e7b92262;
-  // Address for sedimentation pool
-  address internal _pool = 0x4322d14a372700525391c573992D342075D4D518;
+  // Address for platform allocation (3%) and Deposit funds
+  address internal _platform = 0x4322d14a372700525391c573992D342075D4D518;
   // Current mining cycle timestamp
   uint256 internal _time;
   // Total amount of tokens mined across all users
@@ -834,68 +826,24 @@ contract Trade is Ownable {
 
     // Transfer
     IBEP20(token).transferFrom(uid, address(this), amount);
-    // Allocate to market 18%
-    IBEP20(token).transfer(_market, amount.mul(1800).div(BASE_RATE));
-
-    // Give community rewards 22%
-    _processCommunityReward(uid, token, amount);
+    // Allocate to market 12%
+    IBEP20(token).transfer(_market, amount.mul(1200).div(BASE_RATE));
+    // Allocate to platform 3%
+    IBEP20(token).transfer(_platform, amount.mul(300).div(BASE_RATE));
 
     if (token == address(_USDT)) {
       // Add 10% USDT to liquidity pool
-      _addLiquidity(amount.mul(1000).div(BASE_RATE));
+      _addLiquidity(amount.mul(1500).div(BASE_RATE));
       // Buy KR1S and burn
       _buyXBOTToken(false);
       // burn
       _smartVault.burn();
     } else {
       // Burn 60% of KR1S
-      _XBOT.transfer(address(0), amount.mul(6000).div(BASE_RATE));
+      _XBOT.transfer(address(0), amount.mul(8500).div(BASE_RATE));
     }
 
     emit Burn(uid, token, amount, block.timestamp);
-  }
-
-  /**
-   * @dev Community rewards - if less than 12 levels, proportionally allocate to the sedimentation pool
-   * @param uid User address
-   * @param token Token address
-   * @param amount Token amount
-   */
-  function _processCommunityReward(
-    address uid,
-    address token,
-    uint256 amount
-  ) private {
-    address pid = _users[uid].pid;
-    uint256 level = 1;
-    uint256 rate;
-    uint256 _pool_amount = 0;
-    do {
-      if (level == 1) {
-        rate = 800;
-      } else if (level == 2) {
-        rate = 500;
-      } else if (level == 3) {
-        rate = 200;
-      } else if (level >= 4) {
-        rate = 100;
-      }
-
-      uint256 reward = (amount * rate) / BASE_RATE;
-      if (_users[pid].invite >= level || _nolimit[pid]) {
-        // Transfer to upline
-        IBEP20(token).transfer(pid, reward);
-      } else {
-        _pool_amount += reward;
-      }
-
-      level++;
-      pid = _users[pid].pid;
-    } while (level <= 10);
-
-    if (_pool_amount > 0) {
-      IBEP20(token).transfer(_pool, _pool_amount);
-    }
   }
 
   /**
@@ -913,10 +861,8 @@ contract Trade is Ownable {
     do {
       if (level == 1) {
         rate = 800;
-      } else if (level == 2) {
+      } else if (level == 2 || level == 3) {
         rate = 500;
-      } else if (level == 3) {
-        rate = 200;
       } else if (level >= 4) {
         rate = 100;
       }
@@ -1182,7 +1128,7 @@ contract Trade is Ownable {
       // Halve mining power after DECREASE_TIME
       if (mint_last > mint_decrease && !_nolimit[uid]) {
         mint_decrease += DECREASE_TIME;
-        rate = rate.mul(BASE_RATE.sub(3500)).div(BASE_RATE);
+        rate = rate.mul(BASE_RATE.sub(5000)).div(BASE_RATE);
       }
       price = _prices[mint_last] > 0
         ? _prices[mint_last]
@@ -1226,7 +1172,7 @@ contract Trade is Ownable {
     if (_time >= mint_decrease && !_nolimit[msg.sender]) {
       _users[msg.sender].mint_rate = _users[msg.sender]
         .mint_rate
-        .mul(BASE_RATE.sub(3500))
+        .mul(BASE_RATE.sub(5000))
         .div(BASE_RATE);
 
       do {

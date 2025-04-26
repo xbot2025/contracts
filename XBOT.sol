@@ -1,6 +1,6 @@
+// SPDX-License-Identifier: MIT
 // File: contracts/libs/IBEP20.sol
 
-// SPDX-License-Identifier: MIT
 pragma solidity ^0.8.18;
 
 abstract contract IBEP20 {
@@ -112,7 +112,6 @@ abstract contract IBEP20 {
 
 // File: contracts/libs/Context.sol
 
-// SPDX-License-Identifier: MIT
 pragma solidity ^0.8.18;
 
 /*
@@ -138,7 +137,6 @@ abstract contract Context {
 
 // File: contracts/libs/Ownable.sol
 
-// SPDX-License-Identifier: MIT
 pragma solidity ^0.8.18;
 
 /**
@@ -215,15 +213,11 @@ abstract contract Ownable is Context {
     _owner = newOwner;
     emit OwnershipTransferred(oldOwner, newOwner);
   }
-
-
 }
 
 // File: contracts/libs/SafeMath.sol
 
-// SPDX-License-Identifier: MIT
 pragma solidity ^0.8.18;
-
 
 /**
  * @dev Wrappers over Solidity's arithmetic operations with added overflow
@@ -277,7 +271,11 @@ library SafeMath {
    * Requirements:
    * - Subtraction cannot overflow.
    */
-  function sub(uint256 a, uint256 b, string memory errorMessage) internal pure returns (uint256) {
+  function sub(
+    uint256 a,
+    uint256 b,
+    string memory errorMessage
+  ) internal pure returns (uint256) {
     require(b <= a, errorMessage);
     uint256 c = a - b;
 
@@ -333,7 +331,11 @@ library SafeMath {
    * Requirements:
    * - The divisor cannot be zero.
    */
-  function div(uint256 a, uint256 b, string memory errorMessage) internal pure returns (uint256) {
+  function div(
+    uint256 a,
+    uint256 b,
+    string memory errorMessage
+  ) internal pure returns (uint256) {
     // Solidity only automatically asserts when dividing by 0
     require(b > 0, errorMessage);
     uint256 c = a / b;
@@ -368,7 +370,11 @@ library SafeMath {
    * Requirements:
    * - The divisor cannot be zero.
    */
-  function mod(uint256 a, uint256 b, string memory errorMessage) internal pure returns (uint256) {
+  function mod(
+    uint256 a,
+    uint256 b,
+    string memory errorMessage
+  ) internal pure returns (uint256) {
     require(b != 0, errorMessage);
     return a % b;
   }
@@ -376,7 +382,6 @@ library SafeMath {
 
 // File: contracts/libs/IUniswapV2Factory.sol
 
-// SPDX-License-Identifier: MIT
 pragma solidity ^0.8.18;
 
 interface IUniswapV2Factory {
@@ -387,25 +392,25 @@ interface IUniswapV2Factory {
     uint256
   );
 
-  function getPair(address _tokenA, address _tokenB)
-    external
-    view
-    returns (address pair);
+  function getPair(
+    address _tokenA,
+    address _tokenB
+  ) external view returns (address pair);
 
   function allPairs(uint256) external view returns (address pair);
 
   function allPairsLength() external view returns (uint256);
 
-  function createPair(address _tokenA, address _tokenB)
-    external
-    returns (address pair);
+  function createPair(
+    address _tokenA,
+    address _tokenB
+  ) external returns (address pair);
 
   function setFeeToSetter(address) external;
 }
 
 // File: contracts/libs/IUniswapV2Router.sol
 
-// SPDX-License-Identifier: MIT
 pragma solidity ^0.8.18;
 
 interface IUniswapV2Router {
@@ -447,7 +452,6 @@ interface IUniswapV2Router {
 
 // File: contracts/libs/ITrade.sol
 
-// SPDX-License-Identifier: MIT
 pragma solidity ^0.8.18;
 
 interface ITrade {
@@ -457,13 +461,7 @@ interface ITrade {
 
 // File: contracts/XBOT.sol
 
-// SPDX-License-Identifier: MIT
 pragma solidity ^0.8.18;
-
-
-
-
-
 
 contract SmartVault {
   address public _owner;
